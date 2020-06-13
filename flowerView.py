@@ -32,11 +32,11 @@ class flowerView:
                 left_frame.pack(sid="left")
                 left_frame.configure(bg='white')
 
-                
-                infoDots = Label(root, text="Puntos: usted tiene 9 puntos, los primeros 2 para indicar colores\n"+
-                                                    "de los petalos que le gusten, los siguientes 2 para colores del\n"+
-                                                    "centro que le gusten, los siguientes 5 para marcar el centro y el\n"+
-                                                    "contorno del centro y los ultimos 5 para marcar el contorno de un petalo.")
+                infoDots = Label(root, text="Puntos: usted tiene 12 puntos.\n- 2 para indicar colores"+
+                                                    "de los petalos que le gusten.\n- 2 para colores del"+
+                                                    "centro que le gusten.\n- 2 para marcar el centro y el"+
+                                                    "contorno del centro \n- 5 para marcar el contorno de un petalo.\n"+
+                                                    "- 1 para marcar el extremo de un petalo.")
                 infoDots.pack(sid="top")
 
                 f = Figure()
@@ -59,9 +59,18 @@ class flowerView:
             if event.ydata is not None or event.xdata is not None:
                 y = int(event.ydata)
                 x = int(event.xdata)
-                infoOfDot = [self.RGB_images[image][y,x], x, y]
+                tipo = ""
+                if self.indice < 2 :
+                    tipo = "colorPetalo"
+                elif self.indice >= 2 and self.indice < 4 :
+                    tipo = "colorCentro"
+                elif  self.indice >= 4 and self.indice < 6:
+                    tipo = "DimCentro"
+                else:
+                    tipo = "DimPetalos"
+                infoOfDot = [self.RGB_images[image][y,x], x, y,tipo]
                 self.importantDots[image].append(infoOfDot) 
-                for dato in range (3):
+                for dato in range (4):
                     e = tkinter.Entry(left_frame, width=11, fg='black', font=('Arial',10),bg='white')
                     e.grid(row=self.indice, column=dato) 
                     e.insert(END, (self.importantDots[image])[self.indice][dato])  
@@ -77,7 +86,7 @@ class flowerView:
                 print(self.importantDots[image])
                 self.importantDots[image].pop()
                 print(self.importantDots[image])
-                for elementos in range(3):
+                for elementos in range(4):
                     grids = left_frame.grid_slaves()
                     grids[0].destroy()
                 self.indice = self.indice-1

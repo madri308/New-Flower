@@ -11,7 +11,6 @@ class MainApplication(tkinter.Frame):
         root.configure(bg='white')
         root.wm_title("New Flower")
 
-        
         entry3 = tkinter.Entry(root,justify=tkinter.CENTER,width = 70)
         entry3.pack(side = tkinter.BOTTOM)
         entry2 = tkinter.Entry(root,justify=tkinter.CENTER,width = 70)

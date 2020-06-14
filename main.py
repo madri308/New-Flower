@@ -30,11 +30,11 @@ class MainApplication(tkinter.Frame):
         
 
     def callback(self,paths): 
-        reader = imageReader(paths)
+        reader = ImageReader(paths)
         rgbImages = reader.getResults()
         root.quit()
         root.destroy() 
-        view = flowerView(rgbImages)
+        view = FlowerView(rgbImages)
 
 if __name__ == "__main__":
     root = tkinter.Tk()

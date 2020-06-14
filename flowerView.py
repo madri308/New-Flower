@@ -1,15 +1,13 @@
-import cv2
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import (
-    FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 from tkinterStuff import * 
-from dataAnalyzer import *
+from flor import *
 import math
+import cv2
 
-
-class flowerView:
+class FlowerView:
     allPixels = []
     RGB_images = []
     importantDots = [[],[],[]]
@@ -91,5 +89,5 @@ class flowerView:
         else:
             root.quit()
             root.destroy() 
-            analyzer = dataAnalyzer(image=self.RGB_images[imageID],dots=self.importantDots[imageID],imageID=imageID)
+            flor = Flor(image=self.RGB_images[imageID],dots=self.importantDots[imageID],imageID=imageID)
 

@@ -2,8 +2,8 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-from tkinterStuff import * 
-from flor import *
+from tkinterStuff import *        
+from flowerComponents import *
 import math
 import cv2
 

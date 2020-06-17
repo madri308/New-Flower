@@ -1,5 +1,4 @@
-import cv2
-
+from cv2 import cv2
 class ImageReader:
     RGB_images = [None,None,None]
     def __init__(self, paths):

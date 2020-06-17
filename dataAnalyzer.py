@@ -18,9 +18,11 @@ class DataAnalyzer:
             area += (dots[j+5][1] + dots[i+5][1]) * (dots[j+5][2] - dots[i+5][2]) 
             j = i  
         self.petalArea = (int(abs(area / 2.0))) 
+        return self.petalArea
     def getCenterArea(self,dots):
         radio = math.sqrt(((dots[2][1]-dots[3][1])**2)+((dots[2][2]-dots[3][2])**2) )
         self.centerArea = math.pi*radio*radio
+        return self.centerArea
 
 
 

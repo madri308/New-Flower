@@ -21,7 +21,7 @@ class MainApplication(tkinter.Frame):
         start = tkinter.Button(root, text="Empezar", command=lambda:self.callback([entry1.get(),entry2.get(),entry3.get()]))
         start.pack(side = tkinter.BOTTOM)
 
-        cv_img = cv2.cvtColor(cv2.imread("C:/Users/emema/Documents/TEC/2020/SEM_I/Analisis/New-Flower/logo.png"),cv2.COLOR_BGR2RGB)
+        cv_img = cv2.cvtColor(cv2.imread("C:/Users/emema/Documents/TEC/2020/SEM_I/Analisis/New-Flower/images/logo.png"),cv2.COLOR_BGR2RGB)
         height, width, no_channels = cv_img.shape
         canvas = tkinter.Canvas(root, width = width, height = height)
         canvas.pack()

@@ -1,3 +1,30 @@
+from dataAnalyzer import *
+class Flor:
+    def __init__(self,image,dots,imageID):
+        self.ID = imageID
+        self.image = image
+        self.analyzer = DataAnalyzer(image=self.image,dots=dots,imageID=self.ID)
+        
+        self.cantidadPetalos = 0
+        self.petalos = []
+        self.pixeles = {}
+
+    def addCentro(self,diameter,color):
+        self.centro = Centro(diameter,color)
+
+    def addPetalos(self,color,tamanno):
+        self.petalos.append(Petalo(color,tamanno))
+
+    def setCantidadPetalos(self,cantidad):
+        self.cantidadPetalos = cantidad
+
+    def addToHash(self,key,value):
+        self.pixeles[key] = value
+
+    #retorna un objeto Pixel
+    def getValueOfHash(self,key):
+        return self.pixeles[key]
+
 class Pixel:
     def __init__(self,x,y,r,g,b):
         self.x = x
@@ -20,7 +47,7 @@ class Petalo:
         self.pixeles = []
 
     def addPixel(self,pixel):
-        pixeles.append(pixel)
+        self.pixeles.append(pixel)
 
 class Centro:
     def __init__(self,diameter,color):
@@ -29,10 +56,7 @@ class Centro:
         self.pixeles = []
 
     def addPixel(self,pixel):
-        pixeles.append(pixel)
-
-
-
+        self.pixeles.append(pixel)
 
 #flor = Flor()
 #pixel = Pixel(123,12,123,25,100)

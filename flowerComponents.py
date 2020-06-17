@@ -3,20 +3,24 @@ class Flor:
     def __init__(self,image,dots,imageID):
         self.ID = imageID
         self.image = image
-        self.analyzer = DataAnalyzer(image=self.image,dots=dots,imageID=self.ID)
-        
-        self.cantidadPetalos = 0
-        self.petalos = []
+        self.analyzer = DataAnalyzer(image=self.image,
+                                     dots=dots,
+                                     imageID=self.ID)     
         self.pixeles = {}
+        self.addCentro(radio = self.analyzer.getCenterRadio(),
+                        area = self.analyzer.getCenterArea(),
+                        color = self.analyzer.getCenterPrincipalColor())
+        self.addPetalo(area = self.analyzer.getCenterArea(),
+                        contorno = self.analyzer.getPetalShapeDots(),
+                        color = self.analyzer.getPetalPrincipalColor())
 
-    def addCentro(self,diameter,color):
-        self.centro = Centro(diameter,color)
+    def addCentro(self,radio,area,color):
+        print(color)
+        self.centro = Centro(area,radio,color)
 
-    def addPetalos(self,color,tamanno):
-        self.petalos.append(Petalo(color,tamanno))
-
-    def setCantidadPetalos(self,cantidad):
-        self.cantidadPetalos = cantidad
+    def addPetalo(self,color,area,contorno):
+        print(contorno)
+        self.petalos = Petalo(color,area,contorno)
 
     def addToHash(self,key,value):
         self.pixeles[key] = value
@@ -41,17 +45,19 @@ class Pixel:
         print("b: " + str(self.b))
 
 class Petalo:
-    def __init__(self,color,tamanno):
+    def __init__(self,color,area,contorno):
         self.color = color
-        self.tamanno = tamanno
+        self.area = area
+        self.contorno = contorno
         self.pixeles = []
 
     def addPixel(self,pixel):
         self.pixeles.append(pixel)
 
 class Centro:
-    def __init__(self,diameter,color):
-        self.diameter = diameter
+    def __init__(self,area,radio,color):
+        self.area = area
+        self.radio = radio
         self.color = color
         self.pixeles = []
 

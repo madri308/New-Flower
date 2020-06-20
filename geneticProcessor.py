@@ -13,16 +13,16 @@ class Individuo:
 
 class GeneticProcessor(IConstant):
     def __init__(self):
-        self.individuos = []
+        self.poblacion = []
         self.cruzador = GeneticOperator()
 
-    def getIndividuos(self):
-        return self.individuos
+    def getPoblacion(self):
+        return self.poblacion
     
     ## 1. Poblacion inicial
     def startPoblacionInicial(self):
         for individuo in range(self.cantidadIndividuos):
-            self.individuos.append(Individuo(random.randint(0,self.bits-1))) # de la interfaz
+            self.poblacion.append(Individuo(random.randint(0,self.bits-1))) # de la interfaz
     
     def fitness(self):
         pass
@@ -31,5 +31,5 @@ class GeneticProcessor(IConstant):
 
 #alg = GeneticProcessor()
 #alg.startPoblacionInicial()
-#for x in alg.getIndividuos():
+#for x in alg.getPoblacion():
 #    print(x.cromosoma)

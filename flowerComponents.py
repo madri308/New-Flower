@@ -1,25 +1,29 @@
 from dataAnalyzer import *
 class Flor:
-    def __init__(self,image,dots,imageID):
+    def __init__(self,image,dots,imageID,uniqueColors):
+        self.uniqueColors = uniqueColors
         self.ID = imageID
         self.image = image
         self.analyzer = DataAnalyzer(image=self.image,
                                      dots=dots,
                                      imageID=self.ID)     
-        self.pixeles = {}
         self.addCentro(radio = self.analyzer.getCenterRadio(),
                         area = self.analyzer.getCenterArea(),
                         color = self.analyzer.getCenterPrincipalColor())
         self.addPetalo(area = self.analyzer.getCenterArea(),
                         contorno = self.analyzer.getPetalShapeDots(),
                         color = self.analyzer.getPetalPrincipalColor())
-
+        self.pixeles = self.analyzer.getPixelsImageCleaned(self.uniqueColors)
+        print(len(self.pixeles))
+        """
+        for pixel in range(len(self.pixeles)):
+            if self.pixeles[pixel].x == 800 and self.pixeles[pixel].y == 600:
+                self.pixeles[pixel].print_pixel()
+        """
     def addCentro(self,radio,area,color):
-        print(color)
         self.centro = Centro(area,radio,color)
 
     def addPetalo(self,color,area,contorno):
-        print(contorno)
         self.petalos = Petalo(color,area,contorno)
 
     def addToHash(self,key,value):
@@ -28,21 +32,6 @@ class Flor:
     #retorna un objeto Pixel
     def getValueOfHash(self,key):
         return self.pixeles[key]
-
-class Pixel:
-    def __init__(self,x,y,r,g,b):
-        self.x = x
-        self.y = y
-        self.r = r
-        self.g = g
-        self.b = b
-    
-    def print_pixel(self):
-        print("x: " + str(self.x))
-        print("y: " + str(self.y))
-        print("r: " + str(self.r))
-        print("g: " + str(self.g))
-        print("b: " + str(self.b))
 
 class Petalo:
     def __init__(self,color,area,contorno):

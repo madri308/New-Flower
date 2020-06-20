@@ -28,7 +28,6 @@ class MainApplication(tkinter.Frame):
         self.background = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(cv_img))   
         canvas.create_image(0, 0, image=self.background, anchor=tkinter.NW)
         
-
     def callback(self,paths): 
         reader = ImageReader(paths)
         rgbImages = reader.getResults()

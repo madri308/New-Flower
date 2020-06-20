@@ -8,7 +8,6 @@ import math
 import cv2
 
 class FlowerView:
-    allPixels = []
     RGB_images = []
     importantDots = [[],[],[]]
     tkinterStuf = tkinterStuff()
@@ -17,8 +16,6 @@ class FlowerView:
         for i in range(3):
             if rgbImages[i] is not None:
                 self.RGB_images.append(rgbImages[i]) 
-                pixels = np.array(self.RGB_images[i])
-                self.allPixels.append(pixels)
         self.showImage()
     def showImage(self):
         for imageID in range (len(self.RGB_images)):
@@ -29,12 +26,13 @@ class FlowerView:
             left_frame.pack(sid="left")
             left_frame.configure(bg='white')
 
-            infoDots = Label(root, text="Puntos: minimo 10 puntos.\n- 1 Color petalos."+
-                                                            "\n- 1 Color centro."+
-                                                            "\n- 1 Centro de la flor."+
-                                                            "\n- 1 Contorno del centro."+
-                                                            "\n- 1 Extremo de un petalo."+
-                                                            "\n- 5 o más Contorno de un petalo. (direccion reloj)",justify=tkinter.CENTER)
+            infoDots = Label(root, text="Puntos: minimo 10 \n en el siguiente orden:\n- 1 Color petalos."+
+                                                            "\n-1: 1 Color centro."+
+                                                            "\n-2: 1 Centro de la flor."+
+                                                            "\n-3: 1 Contorno del centro."+
+                                                            "\n-4: 1 Extremo de un petalo."+
+                                                            "\n-5: 5 o más Contorno de un petalo. (direccion reloj)"+
+                                                            "\n Y por favor abajo ingrese la cantidad de colores de la imagen.",justify=tkinter.CENTER)
             infoDots.pack(sid="top")
 
             f = Figure()
@@ -48,10 +46,15 @@ class FlowerView:
             toolbar = NavigationToolbar2Tk(canvas, root)# barra de iconos
             toolbar.update()
             canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)  
+
+            quantUniqueColors = tkinter.Entry(root,justify=tkinter.CENTER,width = 15)
+            quantUniqueColors.pack(side = tkinter.BOTTOM)
+
             deleteRowButton = tkinter.Button(root, text="Eliminar ultimo punto", command=lambda:self.deleteLastRow(imageID,left_frame))
             deleteRowButton.pack(sid="bottom")
-            saveData = tkinter.Button(root, text="Siguiente", command=lambda:self.next(imageID,root))
+            saveData = tkinter.Button(root, text="Siguiente", command=lambda:self.next(imageID,root,quantUniqueColors.get()))
             saveData.pack(sid="bottom")
+
             tkinter.mainloop()
             self.fila = 0
     def onclick(self,event,imageID,left_frame):
@@ -65,7 +68,6 @@ class FlowerView:
                     e = tkinter.Entry(left_frame, width=11, fg='black', font=('Arial',10),bg='white')
                     e.grid(row=self.fila, column=dato) 
                     e.insert(END, (self.importantDots[imageID])[self.fila][dato])  
-
                 self.fila = self.fila+1
             else:
                 raise ValueError
@@ -83,11 +85,11 @@ class FlowerView:
                 raise ValueError
         except ValueError:
             self.tkinterStuf.showError("Oops! Ya no hay puntos.")
-    def next(self,imageID,root):
+    def next(self,imageID,root,entryUniqueColors):
         if len(self.importantDots[imageID]) < 10:
             self.tkinterStuf.showError("Oops! Te faltan puntos.")
         else:
             root.quit()
             root.destroy() 
-            flor = Flor(image=self.RGB_images[imageID],dots=self.importantDots[imageID],imageID=imageID)
+            flor = Flor(image=self.RGB_images[imageID],dots=self.importantDots[imageID],imageID=imageID,uniqueColors = int(entryUniqueColors))
 

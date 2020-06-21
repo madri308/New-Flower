@@ -86,8 +86,8 @@ class FlowerView:
         except ValueError:
             self.tkinterStuf.showError("Oops! Ya no hay puntos.")
     def next(self,imageID,root,entryUniqueColors):
-        if len(self.importantDots[imageID]) < 10:
-            self.tkinterStuf.showError("Oops! Te faltan puntos.")
+        if len(self.importantDots[imageID]) < 10 or entryUniqueColors == "":
+            self.tkinterStuf.showError("Oops! Te faltan datos.")
         else:
             root.quit()
             root.destroy() 

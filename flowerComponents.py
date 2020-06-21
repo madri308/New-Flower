@@ -14,12 +14,9 @@ class Flor:
                         contorno = self.analyzer.getPetalShapeDots(),
                         color = self.analyzer.getPetalPrincipalColor())
         self.pixeles = self.analyzer.getPixelsImageCleaned(self.uniqueColors)
-        print(len(self.pixeles))
-        """
         for pixel in range(len(self.pixeles)):
-            if self.pixeles[pixel].x == 800 and self.pixeles[pixel].y == 600:
-                self.pixeles[pixel].print_pixel()
-        """
+             self.pixeles[pixel].print_pixel()
+        
     def addCentro(self,radio,area,color):
         self.centro = Centro(area,radio,color)
 
@@ -32,7 +29,6 @@ class Flor:
     #retorna un objeto Pixel
     def getValueOfHash(self,key):
         return self.pixeles[key]
-
 class Petalo:
     def __init__(self,color,area,contorno):
         self.color = color

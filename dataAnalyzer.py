@@ -35,6 +35,8 @@ class DataAnalyzer:
         totalArea = math.pi*radio*radio
         return totalArea
     #DIMENSIONES
+    def getTotalCenter(self):
+        return self.dots[2]
     def getCenterRadio(self):
         radio = math.sqrt(((self.dots[2][1]-self.dots[3][1])**2)+((self.dots[2][2]-self.dots[3][2])**2))
         return radio
@@ -53,37 +55,43 @@ class DataAnalyzer:
         resultPixels = []
         
         centerPrincipalColor = self.getCenterPrincipalColor()
-        #centerPrincipalColor_rgb = sRGBColor(centerPrincipalColor[0], centerPrincipalColor[1], centerPrincipalColor[2])
+        #centerPrincipalColor_rgb = sRGBColor(centerPrincipalColor[0], centerPrincipalColor[1], centerPrincipalColor[2],True)
         #centerPrincipalColor_lab = convert_color(centerPrincipalColor_rgb, LabColor)
 
         petalPrincipalColor = self.getPetalPrincipalColor()
-        #petalPrincipalColor_rgb = sRGBColor(petalPrincipalColor[0], petalPrincipalColor[1], petalPrincipalColor[2])
+        #petalPrincipalColor_rgb = sRGBColor(petalPrincipalColor[0], petalPrincipalColor[1], petalPrincipalColor[2],True)
         #petalPrincipalColor_lab = convert_color(petalPrincipalColor_rgb, LabColor) 
 
         altura =len(self.allPixels)
         ancho = len(self.allPixels[0])
         tipoPixel = ""
-        for pixely in range(altura-1):
-            for pixelx in range(ancho-1):
-                
+        print(altura*ancho)
+      
+        for pixely in range(altura):
+            for pixelx in range(ancho):
+
                 pixelColor = self.allPixels[pixely][pixelx]
-                #pixelColor_rgb = sRGBColor(pixelColor[0], pixelColor[1], pixelColor[2])
+                #pixelColor_rgb = sRGBColor(pixelColor[0], pixelColor[1], pixelColor[2],True)
                 #pixelColor_lab = convert_color(pixelColor_rgb, LabColor) 
-                
+              
                 #diffBetCenC_PxlC = delta_e_cie2000(centerPrincipalColor_lab, pixelColor_lab)
                 #diffBetPetC_PxlC = delta_e_cie2000(petalPrincipalColor_lab, pixelColor_lab)
                 diffBetCenC_PxlC = self.getColorDistance(pixelColor,centerPrincipalColor)
                 diffBetPetC_PxlC = self.getColorDistance(pixelColor,petalPrincipalColor)
+                
                 tipoPixel = ""
-                if diffBetCenC_PxlC < altura*ancho/uniqueColors:#COMO NO ALAMBRAR ESTO?? totalpixels/cantidad de colores
+                center = self.getTotalCenter()
+                d = math.sqrt(((pixelx-center[1])**2)+((pixely-center[2])**2))
+                if diffBetCenC_PxlC < altura*ancho/uniqueColors and d < self.getCenterRadio() :#COMO NO ALAMBRAR ESTO?? totalpixels/cantidad de colores
                     tipoPixel = "C"
-                elif diffBetPetC_PxlC < altura*ancho/uniqueColors:
+                elif diffBetPetC_PxlC < altura*ancho/uniqueColors and d < self.getTotalFlowerRadio():
                     tipoPixel = "P"
                 else:
                     continue
                 #Crear un pixel y meterlo en resultPixels
                 pixel = Pixel(x = pixelx, y = pixely, color = self.allPixels[pixely][pixelx], type = tipoPixel)
                 resultPixels.append(pixel)
+                
         return resultPixels
     def getLabColor(self,RGB):
         Color_rgb = sRGBColor(RGB[0], RGB[1], RGB[2])

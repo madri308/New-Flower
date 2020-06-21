@@ -6,22 +6,23 @@ class Flor:
         self.image = image
         self.analyzer = DataAnalyzer(image=self.image,
                                      dots=dots,
-                                     imageID=self.ID)     
+                                     imageID=self.ID,
+                                     uniqueColors = self.uniqueColors)     
         self.addCentro(radio = self.analyzer.getCenterRadio(),
                         area = self.analyzer.getCenterArea(),
                         color = self.analyzer.getCenterPrincipalColor())
         self.addPetalo(area = self.analyzer.getCenterArea(),
                         contorno = self.analyzer.getPetalShapeDots(),
                         color = self.analyzer.getPetalPrincipalColor())
-        self.pixeles = self.analyzer.getPixelsImageCleaned(self.uniqueColors)
-        for pixel in range(len(self.pixeles)):
-             self.pixeles[pixel].print_pixel()
-        
+        self.pixeles = self.analyzer.getPixelsImageCleaned()
+        self.cantPetalos = self.analyzer.getQuantityOfPetals()
+        print(self.cantPetalos)
+    
     def addCentro(self,radio,area,color):
         self.centro = Centro(area,radio,color)
 
     def addPetalo(self,color,area,contorno):
-        self.petalos = Petalo(color,area,contorno)
+        self.petalo = Petalo(color,area,contorno)
 
     def addToHash(self,key,value):
         self.pixeles[key] = value
@@ -35,7 +36,6 @@ class Petalo:
         self.area = area
         self.contorno = contorno
         self.pixeles = []
-
     def addPixel(self,pixel):
         self.pixeles.append(pixel)
 

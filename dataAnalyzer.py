@@ -5,7 +5,8 @@ import numpy as np
 import math
 
 class DataAnalyzer:
-    def __init__(self,image,dots,imageID):
+    def __init__(self,image,dots,imageID,uniqueColors):
+        self.uniqueColors = uniqueColors
         self.image = image
         self.dots = dots
         self.imageID = imageID
@@ -51,7 +52,7 @@ class DataAnalyzer:
         color = self.dots[0][0]
         return color
     #PIXELES
-    def getPixelsImageCleaned(self,uniqueColors):
+    def getPixelsImageCleaned(self):
         resultPixels = []
         
         centerPrincipalColor = self.getCenterPrincipalColor()
@@ -82,23 +83,16 @@ class DataAnalyzer:
                 tipoPixel = ""
                 center = self.getTotalCenter()
                 d = math.sqrt(((pixelx-center[1])**2)+((pixely-center[2])**2))
-                if diffBetCenC_PxlC < altura*ancho/uniqueColors and d < self.getCenterRadio() :#COMO NO ALAMBRAR ESTO?? totalpixels/cantidad de colores
+                if diffBetCenC_PxlC < altura*ancho/self.uniqueColors and d < self.getCenterRadio() :#COMO NO ALAMBRAR ESTO?? totalpixels/cantidad de colores
                     tipoPixel = "C"
-                elif diffBetPetC_PxlC < altura*ancho/uniqueColors and d < self.getTotalFlowerRadio():
+                elif diffBetPetC_PxlC < altura*ancho/self.uniqueColors and d < self.getTotalFlowerRadio():
                     tipoPixel = "P"
                 else:
                     continue
                 #Crear un pixel y meterlo en resultPixels
                 pixel = Pixel(x = pixelx, y = pixely, color = self.allPixels[pixely][pixelx], type = tipoPixel)
                 resultPixels.append(pixel)
-                
         return resultPixels
-    def getLabColor(self,RGB):
-        Color_rgb = sRGBColor(RGB[0], RGB[1], RGB[2])
-        Color_lab = convert_color(Color_rgb, LabColor)
-        return Color_lab
-    def showPixels(self):
-        print(self.allPixels[370][699])
     def getColorDistance(self,RGB1,RGB2):
         rmean = ((RGB1[0]) + (RGB2[0])-2)
         r = ((RGB1[0] - (RGB2[0])))
@@ -106,6 +100,9 @@ class DataAnalyzer:
         b = ((RGB1[2] - (RGB2[2])))
         difference = math.sqrt((((512+rmean)*r*r)>>8)+ 4*g*g + (((767-rmean)*b*b)>>8))
         return difference
+    #CANTIDADES
+    def getQuantityOfPetals(self):
+        return int((self.getTotalArea()-self.getCenterArea())/self.getPetalArea())
 class Pixel:
     def __init__(self,x,y,color,type):
         self.x = x

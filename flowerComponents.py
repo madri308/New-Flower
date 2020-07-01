@@ -16,20 +16,12 @@ class Flor:
                         color = self.analyzer.getPetalPrincipalColor())
         self.pixeles = self.analyzer.getPixelsImageCleaned()
         self.cantPetalos = self.analyzer.getQuantityOfPetals()
-        print(self.cantPetalos)
     
     def addCentro(self,radio,area,color):
         self.centro = Centro(area,radio,color)
 
     def addPetalo(self,color,area,contorno):
         self.petalo = Petalo(color,area,contorno)
-
-    def addToHash(self,key,value):
-        self.pixeles[key] = value
-
-    #retorna un objeto Pixel
-    def getValueOfHash(self,key):
-        return self.pixeles[key]
 class Petalo:
     def __init__(self,color,area,contorno):
         self.color = color

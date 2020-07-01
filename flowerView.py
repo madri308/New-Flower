@@ -2,7 +2,8 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-from tkinterStuff import *        
+from tkinterStuff import *  
+from controller import *      
 from flowerComponents import *
 import math
 import cv2
@@ -11,6 +12,7 @@ class FlowerView:
     RGB_images = []
     importantDots = [[],[],[]]
     tkinterStuf = tkinterStuff()
+    flowers = []
     def __init__(self, rgbImages):
         self.fila = 0
         for i in range(3):
@@ -89,7 +91,10 @@ class FlowerView:
         if len(self.importantDots[imageID]) < 10 or entryUniqueColors == "":
             self.tkinterStuf.showError("Oops! Te faltan datos.")
         else:
+            root.title("Pocesando...")
+            flor = Flor(image=self.RGB_images[imageID],dots=self.importantDots[imageID],imageID=imageID,uniqueColors = int(entryUniqueColors))
+            self.flowers.append(flor)
             root.quit()
             root.destroy() 
-            flor = Flor(image=self.RGB_images[imageID],dots=self.importantDots[imageID],imageID=imageID,uniqueColors = int(entryUniqueColors))
-
+            if(imageID == len(self.RGB_images)-1):
+                controller = Controller(self.flowers) 

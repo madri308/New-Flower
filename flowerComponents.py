@@ -16,7 +16,7 @@ class Flor:
                         color = self.analyzer.getPetalPrincipalColor())
         self.pixeles = self.analyzer.getPixelsImageCleaned()
         self.cantPetalos = self.analyzer.getQuantityOfPetals()
-    
+        self.centro = self.analyzer.getTotalCenter()
     def addCentro(self,radio,area,color):
         self.centro = Centro(area,radio,color)
 

@@ -50,10 +50,12 @@ class GeneticProcessor(IConstant):
             max1 = self.bits*self.table[color][2]/100
             self.table[color].append(maxAnterior+max1-1)
             maxAnterior = maxAnterior+max1
+        self.showTable()
     def showTable(self):
         for color in range(len(self.table)):
             print(self.table[color][0]," ",self.table[color][1]," ",self.table[color][2]," ",self.table[color][3]," ",self.table[color][4])
-
+    def createPetalo(self, pixel):
+        pass
     
 
 

@@ -9,6 +9,13 @@ class Controller:
         for i in range(len(flowers)):
             self.flowers.append(flowers[i])   
             self.allPixels = self.allPixels+flowers[i].pixeles
+
+        ## Comienza el GA --------------------
         self.GP.createTable(self.allPixels)
+        #print()
+        #self.GP.showTable()
+        #print()
+        self.GP.avanzarGenContinua()
+
     def resultsView(self):
-        
+        pass

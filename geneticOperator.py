@@ -21,15 +21,16 @@ class GeneticOperator(IConstant):
         return int(newIndividuo,2)
 
     def mutate(self,newGen):
-        punto = random.randint(0,self.cantidadBits-1)
-        #print(punto)
-        gen = self.convertBin(newGen)
-        print(gen)
-        if (gen[punto] == '0'):
-            gen = gen[:punto] + '1' + gen[punto+1:] 
+        if (random.random() <= 0.075):
+            punto = random.randint(0,self.cantidadBits-1)
+            #print(punto)
+            gen = self.convertBin(newGen)
+            if (gen[punto] == '0'):
+                gen = gen[:punto] + '1' + gen[punto+1:] 
+            else:
+                gen = gen[:punto] + '0' + gen[punto+1:]
+            return int(gen,2)
         else:
-            gen = gen[:punto] + '0' + gen[punto+1:]
-        print(gen)
-        return int(gen,2)
+            return newGen
     
 

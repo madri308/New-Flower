@@ -23,6 +23,11 @@ class Controller:
         self.gerPromPetals()
         self.gerPromCenter()
         self.resultsView()
+        ## Comienza el GA --------------------
+        #print()
+        #self.GP.showTable()
+        #print()
+        self.GP.avanzarGenContinua()
     def resultsView(self):
         """root = self.tkinterStuf.newWindow("resultado")
         root.configure(bg='white')
@@ -85,3 +90,9 @@ class Controller:
         prom[0] = prom[0]/len(self.flowers)
         prom[1] = prom[1]/len(self.flowers)
         self.centroProm = prom
+        for i in range(len(flowers)):
+            self.flowers.append(flowers[i])   
+            self.allPixels = self.allPixels+flowers[i].pixeles
+
+    def resultsView(self):
+        pass

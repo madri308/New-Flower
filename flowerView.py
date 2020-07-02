@@ -98,3 +98,4 @@ class FlowerView:
             root.destroy() 
             if(imageID == len(self.RGB_images)-1):
                 controller = Controller(self.flowers) 
+

@@ -1,0 +1,52 @@
+"""
+        #CREA TODA LA FLOR Y LA LLENA
+        contours = np.asarray(self.promShape, 'int32')
+        img = np.zeros( (800,800,3),np.uint8 ) 
+        angle = 360/self.quantPetals
+        for petalo in range(self.quantPetals+1):
+            contours = self.rotateShape(contours,math.radians(angle),self.centroProm)
+            cv2.fillConvexPoly(img, contours, (255,255,255),lineType=4)
+            cv2.drawContours(img,[contours],0,(71,67,60),1)
+
+        for row in range(len(img)):
+            for column in range(len(img[row])):
+                if img[row,column][0] == 255 and img[row,column][1] == 255 and img[row,column][2] == 255:
+                    img[row,column] = (self.allPixels[random.randint(0,len(self.allPixels)-1)].color)[::-1]
+        cv2.imshow(" ", img)
+        cv2.waitKey()
+        """
+"""
+    #MANERA 2
+    def builtPetal(self):
+        petal = []
+        self.limits = [[-1,-1],[-1,-1],[-1,-1],[-1,-1]] #arriba,abajo,izq,der
+        for dot in self.promShape:
+            x = dot[0]
+            y = dot[1]
+            if(y < self.limits[0][1] or self.limits[0][1] == -1):
+                self.limits[0] = [x,y]
+            if(y > self.limits[1][1] or self.limits[1][1] == -1):
+                self.limits[1] = [x,y]
+            if(x < self.limits[2][0] or self.limits[2][0] == -1 ):
+                self.limits[2] = [x,y]
+            if(x > self.limits[3][0] or self.limits[3][0] == -1):
+                self.limits[3] = [x,y]
+        for newDot in range(int(self.area)):
+            x = random.randint(int(self.limits[2][0]),int(self.limits[3][0]))
+            y = random.randint(int(self.limits[0][1]),int(self.limits[1][1]))
+            while cv2.pointPolygonTest(self.contour,(x,y),False)<0:    
+                x = random.randint(int(self.limits[2][0]),int(self.limits[3][0]))
+                y = random.randint(int(self.limits[0][1]),int(self.limits[1][1]))
+            petal.append([x,y])
+        return np.asarray(petal, 'int32')
+    def drawFlower(self):
+        for petaloId in range(self.quantPetals):
+            petal = self.builtPetal()
+            for dot in petal:
+                self.img[dot[0],dot[1]] = (self.allPixels[random.randint(0,len(self.allPixels)-1)].color)
+            self.promShape = self.rotateShape(self.promShape,math.radians(self.angle),self.centroProm)
+            self.contour = np.asarray(self.promShape, 'int32')
+        imgtk = ImageTk.PhotoImage(image=Image.fromarray(self.img))
+        self.panel.configure(image = imgtk)
+        self.panel.image = imgtk
+    """

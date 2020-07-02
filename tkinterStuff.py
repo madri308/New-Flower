@@ -1,7 +1,8 @@
 import tkinter
 from tkinter import messagebox
 from tkinter import *
-
+from PIL import ImageTk
+from PIL import Image
 
 class tkinterStuff():
     def newWindow(self, title):

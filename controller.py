@@ -14,7 +14,7 @@ from PIL import Image, ImageDraw
 from PIL import ImagePath  
 import random
 class Controller:
-    GP = GeneticProcessor()
+    
     tkinterStuf = tkinterStuff()
     def __init__(self, flowers):
         self.state = 1
@@ -27,15 +27,20 @@ class Controller:
         self.promShape = self.createPromShape()
         self.contour = np.asarray(self.promShape, 'int32')
         self.quantPetals = self.getPromPetals()
-        self.centroProm = self.getPromCenter()
+        self.centroProm = self.getPromCenter() 
         self.originalLimits = self.getLimits()
         #areas promedio
         self.centerArea = self.getPromCentralArea()
         self.petalArea = int((self.originalLimits[1][1]-self.originalLimits[0][1])*(self.originalLimits[3][0]-self.originalLimits[2][0]))
+        
         #Genetico
+        self.GP = GeneticProcessor()
         self.GP.createTable([self.allCenterPixels,self.allPetalPixels])
-        #self.GP.showTable()
+        self.GP.startPoblacionInicial(int(self.petalArea),int(self.centerArea))
+        #self.GP.startPoblacionInicial(40,40)
         #self.GP.avanzarGenContinua()
+        
+        
         #Tkinter stuff
         self.genCount = 0
         self.root = tkinter.Tk()
@@ -57,8 +62,10 @@ class Controller:
     def start(self):
         if self.state == 1:
             self.root.title("Generacion "+str(self.genCount))
-            self.genCount += 1
+            self.genCount = self.GP.genCounter
             self.drawFlower()
+            print("----------------------------------------------------------------")
+            self.GP.avanzarGeneracion()
             self.imagePanel.after(10,self.start)
     def restart(self):
         self.state = 1

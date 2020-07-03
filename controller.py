@@ -30,7 +30,7 @@ class Controller:
         self.centroProm = self.getPromCenter() 
         self.originalLimits = self.getLimits()
         #areas promedio
-        self.centerArea = self.getPromCentralArea()
+        self.centerArea = (self.getPromRadio()*2)**2
         self.petalArea = int((self.originalLimits[1][1]-self.originalLimits[0][1])*(self.originalLimits[3][0]-self.originalLimits[2][0]))
         
         #Genetico
@@ -39,7 +39,6 @@ class Controller:
         self.GP.startPoblacionInicial(int(self.petalArea),int(self.centerArea))
         #self.GP.startPoblacionInicial(40,40)
         #self.GP.avanzarGenContinua()
-        
         
         #Tkinter stuff
         self.genCount = 0
@@ -63,10 +62,12 @@ class Controller:
         if self.state == 1:
             self.root.title("Generacion "+str(self.genCount))
             self.genCount = self.GP.genCounter
-            self.drawFlower()
+            pixelList = [self.GP.getPoblacionPetalo(),self.GP.getPoblacionCentro()]
+            self.drawFlower(pixelList)
             print("----------------------------------------------------------------")
             self.GP.avanzarGeneracion()
-            self.imagePanel.after(10,self.start)
+            #self.GP.avanzarGenContinua()
+            self.imagePanel.after(1000,self.start)
     def restart(self):
         self.state = 1
         self.start()
@@ -108,18 +109,20 @@ class Controller:
                 d = math.sqrt(((x-self.centroProm[0])**2)+((y-self.centroProm[1])**2))
             center.append([x,y])
         return center
-    def drawFlower(self):
+    def drawFlower(self,pixelList):
+        petalPixels = pixelList[0]
+        centerPixels = pixelList[1]
         #PINTA PETALOS
         angle = 360/self.quantPetals
         originalPetal = self.buildPetal()
         for petaloId in range(self.quantPetals):
             petal = self.rotateShape(originalPetal,math.radians(angle)*petaloId,self.centroProm)
             for dot in petal:
-                self.img[dot[0],dot[1]] = (self.allPetalPixels[random.randint(0,len(self.allPetalPixels)-1)].color)
+                self.img[dot[0],dot[1]] = (self.GP.findColorOfIndividual(petalPixels[random.randint(0,len(petalPixels)-1)][0].getCromosoma(),self.GP.petalColorsTable))
         #PINTA CENTRO
         center = self.buildCenter()
         for dot in center:
-            self.img[dot[0],dot[1]] = (self.allCenterPixels[random.randint(0,len(self.allCenterPixels)-1)].color)
+            self.img[dot[0],dot[1]] = (self.GP.findColorOfIndividual(centerPixels[random.randint(0,len(centerPixels)-1)][0].getCromosoma(),self.GP.centerColorsTable))
         imgtk = ImageTk.PhotoImage(image=Image.fromarray(self.img))
         self.imagePanel.configure(image = imgtk)
         self.imagePanel.image = imgtk

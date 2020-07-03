@@ -186,7 +186,6 @@ class GeneticProcessor(IConstant):
         self.poblacionPetalo = self.reproducirPoblacion(self.poblacionPetalo)
         #self.showPoblacion()            
         self.genCounter += 1
-        print(self.genCounter)
 
     ## Va a reproducir a la población tantas veces como generaciones se desean
     def avanzarGenContinua(self):

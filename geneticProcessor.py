@@ -15,23 +15,34 @@ class GeneticProcessor(IConstant):
     petalColorsTable = []
     centerColorsTable = []
     def __init__(self):
-        self.poblacion = []
+        self.poblacionPetalo = []
+        self.poblacionCentro = []
         self.cruzador = GeneticOperator()
+        self.genCounter = 0
 
-    def getPoblacion(self):
-        return self.poblacion
+    def getPoblacionPetalo(self):
+        return self.poblacionPetalo
+    
+    def getPoblacionCentro(self):
+        return self.poblacionCentro
     
     ## 1. Poblacion inicial
-    def startPoblacionInicial(self):
-        for individuo in range(self.cantidadIndividuos):
-            self.poblacion.append([Individuo(random.randint(0,self.bits-1)),0]) # de la interfaz
+    def startPoblacionInicial(self,cantidadIndividuosPetalo,cantidadIndividuosCentro):
+        for individuo in range(cantidadIndividuosPetalo):
+            self.poblacionPetalo.append([Individuo(random.randint(0,self.bits-1)),0]) # de la interfaz
+        for individuo in range(cantidadIndividuosCentro):
+            self.poblacionCentro.append([Individuo(random.randint(0,self.bits-1)),0])
 
+        print("Numero de poblacion Centro: " + str(len(self.poblacionCentro)))
+        print("Numero de poblacion Pétalo: " + str(len(self.poblacionPetalo)))
 
     ## Encontrar en la tabla el color del Individuo, retorna una lista
-    def findColorOfIndividual(self,colorId):
-        for colorRange in range(len(self.petalColorsTable)):
-            if (colorId >= self.petalColorsTable[colorRange][3] and colorId <= self.petalColorsTable[colorRange][4]):
-                return self.petalColorsTable[colorRange][0]
+    def findColorOfIndividual(self,colorId,tabla):
+        for colorRange in range(len(tabla)):
+            if (colorId >= tabla[colorRange][3] and colorId <= tabla[colorRange][4]):
+                return tabla[colorRange][0]
+        return tabla[0][0] # CABALLADA --- PARA EVITAR -- CAMBIAR AL ULTIMO DIA DE REVISION
+        
 
     ## Saca la luminosidad con la fórmula
     def getLuminosidad(self,rgb):
@@ -81,13 +92,16 @@ class GeneticProcessor(IConstant):
         return optimo
 
     ## pasa el fitness a todos
-    def fitness(self):
+    def fitness(self,poblacion,tabla):
         index = 0
-        for indivNumero in range (len(self.poblacion)):
-            colorIndividuo = self.findColorOfIndividual(self.poblacion[indivNumero][0].getCromosoma())
+        for indivNumero in range (len(poblacion)):
+            colorIndividuo = self.findColorOfIndividual(poblacion[indivNumero][0].getCromosoma(),tabla)
+            #print(colorIndividuo)
+            #print(poblacion[indivNumero][0].getCromosoma())
+            #print(self.getColorOptimo(colorIndividuo))
             calificacion = self.getLuminosidad(colorIndividuo) / self.getLuminosidad(self.getColorOptimo(colorIndividuo))
-            self.poblacion[indivNumero][1] = calificacion
-
+            poblacion[indivNumero][1] = calificacion
+        return poblacion
 
     def createTable(self,pixels):
         allColors = []
@@ -130,41 +144,59 @@ class GeneticProcessor(IConstant):
         sub_li.sort(key = lambda x: x[1], reverse = True) 
         return sub_li 
 
-    def showPoblacion(self):
-        print("Población actual -> Size: " + str(len(self.poblacion)))
-        for index in range (len(self.poblacion)):
-            individuo = self.poblacion[index][0]
-            print ("Individuo = " + str(individuo.getCromosoma()) + " " + str(self.findColorOfIndividual(individuo.getCromosoma())))
+    def showPoblacion(self,poblacion,tabla):
+        print("Población actual -> Size: " + str(len(poblacion)))
+        for index in range (len(poblacion)):
+            individuo = poblacion[index][0]
+            print ("Individuo = " + str(individuo.getCromosoma()) + " " + str(self.findColorOfIndividual(individuo.getCromosoma(),tabla)))
         print()
 
+    ## Elimina a n individuos peor adaptados
+    def eliminarIndividuos(self,poblacion,cantidad):
+        if cantidad <= len(poblacion):
+            return poblacion[:len(poblacion) - cantidad]
+        
+
+    def reproducirPoblacion(self,poblacion):
+        cantidadParejas = ((len(poblacion) * self.individuosTomados) // 100) // 2
+        poblacion = self.eliminarIndividuos(poblacion, cantidadParejas)
+
+        for i in range (cantidadParejas):
+            individuo1 = poblacion[i][0]
+            individuo2 = poblacion[i+1][0]
+            cromosoma = self.cruzador.cross(individuo1.getCromosoma(),individuo2.getCromosoma())
+            cromosoma = self.cruzador.mutate(cromosoma)
+            poblacion.append([Individuo(cromosoma),0])
+        
+        return poblacion
+
+    ## Avanza a la siguiente generación
     def avanzarGeneracion(self):
         ## 2. Aplicar fitness
-        self.fitness()
+        self.poblacionCentro = self.fitness(self.poblacionCentro,self.centerColorsTable)
+        self.poblacionPetalo = self.fitness(self.poblacionPetalo,self.petalColorsTable)
 
-        self.poblacion = self.Sort(self.poblacion)
+        self.poblacionCentro = self.Sort(self.poblacionCentro)
+        self.poblacionPetalo = self.Sort(self.poblacionPetalo)
 
         ## 3. Cruces y mutacion
         ##Las veces que va a agarrar una pareja
         ##
-        cantidadParejas = ((len(self.poblacion) * self.individuosTomados) // 100) // 2 
-        for i in range (cantidadParejas):
-            individuo1 = self.poblacion[i][0]
-            individuo2 = self.poblacion[i+1][0]
-            cromosoma = self.cruzador.cross(individuo1.getCromosoma(),individuo2.getCromosoma())
-            cromosoma = self.cruzador.mutate(cromosoma)
-            self.poblacion.append([Individuo(cromosoma),0])
-        
+        self.poblacionCentro = self.reproducirPoblacion(self.poblacionCentro)
+        self.poblacionPetalo = self.reproducirPoblacion(self.poblacionPetalo)
         #self.showPoblacion()            
+        self.genCounter += 1
+        print(self.genCounter)
 
     ## Va a reproducir a la población tantas veces como generaciones se desean
     def avanzarGenContinua(self):
-        ## 1. Iniciar Poblacion
-        self.startPoblacionInicial()
-        self.showPoblacion() 
+        #self.showPoblacion(self.poblacionCentro,self.centerColorsTable)
+        #self.showPoblacion(self.poblacionPetalo,self.petalColorsTable) 
         for numGen in range (self.generacionMax):
             self.avanzarGeneracion()
 
-        #self.showPoblacion() 
+        #self.showPoblacion(self.poblacionCentro,self.centerColorsTable)
+        #self.showPoblacion(self.poblacionPetalo,self.petalColorsTable) 
 
 
 #alg = GeneticProcessor()

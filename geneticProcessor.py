@@ -12,7 +12,8 @@ class Individuo:
 
 
 class GeneticProcessor(IConstant):
-    table = []
+    petalColorsTable = []
+    centerColorsTable = []
     def __init__(self):
         self.poblacion = []
         self.cruzador = GeneticOperator()
@@ -28,9 +29,9 @@ class GeneticProcessor(IConstant):
 
     ## Encontrar en la tabla el color del Individuo, retorna una lista
     def findColorOfIndividual(self,colorId):
-        for colorRange in range(len(self.table)):
-            if (colorId >= self.table[colorRange][3] and colorId <= self.table[colorRange][4]):
-                return self.table[colorRange][0]
+        for colorRange in range(len(self.petalColorsTable)):
+            if (colorId >= self.petalColorsTable[colorRange][3] and colorId <= self.petalColorsTable[colorRange][4]):
+                return self.petalColorsTable[colorRange][0]
 
     ## Saca la luminosidad con la fórmula
     def getLuminosidad(self,rgb):
@@ -42,7 +43,6 @@ class GeneticProcessor(IConstant):
         if (optimo/255 > 1):
             return 255
         return optimo
-
 
     def getColorOptimo(self,colorRGB):
         orden = [0,0,0]
@@ -90,33 +90,41 @@ class GeneticProcessor(IConstant):
 
 
     def createTable(self,pixels):
-        total = len(pixels)
-        for pixel in range(len(pixels)):
-            pixelColor = pixels[pixel].color
-            encontrado = False
-            for color in range(len(self.table)):
-                if (pixelColor[0]+pixelColor[1]+pixelColor[2]) - (self.table[color][0][0]+self.table[color][0][1]+self.table[color][0][2]) == 0:
-                     self.table[color][1] += 1
-                     apariciones = self.table[color][1]
-                     porcentaje = apariciones*100/total
-                     self.table[color][2] = porcentaje
-                     encontrado = True
-
-            if encontrado == False:
-                        #color,aparicion,porcentaje
-                color = [pixelColor,1,100/total]
-                self.table.append(color)
-            
-        maxAnterior = 0
-        for color in range(len(self.table)):
-            self.table[color].append(maxAnterior)
-            max1 = self.bits*self.table[color][2]/100
-            self.table[color].append(maxAnterior+max1-1)
-            maxAnterior = maxAnterior+max1
+        allColors = []
+        for typePixel in pixels:
+            colors = []
+            total = len(typePixel)
+            for pixel in range(len(typePixel)):
+                pixelColor = typePixel[pixel].color
+                encontrado = False
+                for color in range(len(colors)):
+                    if (pixelColor[0]+pixelColor[1]+pixelColor[2]) - (colors[color][0][0]+colors[color][0][1]+colors[color][0][2]) == 0:
+                        colors[color][1] += 1
+                        apariciones = colors[color][1]
+                        porcentaje = apariciones*100/total
+                        colors[color][2] = porcentaje
+                        encontrado = True
+                if encontrado == False:
+                            #color,aparicion,porcentaje
+                    color = [pixelColor,1,100/total]
+                    colors.append(color)
+            maxAnterior = 0
+            for color in range(len(colors)):
+                colors[color].append(maxAnterior)
+                max1 = self.bits*colors[color][2]/100
+                colors[color].append(maxAnterior+max1-1)
+                maxAnterior = maxAnterior+max1
+            allColors.append(colors)
+        self.centerColorsTable = allColors[0]
+        self.petalColorsTable = allColors[1]
         self.showTable()
     def showTable(self):
-        for color in range(len(self.table)):
-            print(self.table[color][0]," ",self.table[color][1]," ",self.table[color][2]," ",self.table[color][3]," ",self.table[color][4])
+        print("PETALOS:")
+        for color in range(len(self.petalColorsTable)):
+            print(self.petalColorsTable[color][0]," ",self.petalColorsTable[color][1]," ",self.petalColorsTable[color][2]," ",self.petalColorsTable[color][3]," ",self.petalColorsTable[color][4])
+        print("CENTRO:")
+        for color in range(len(self.centerColorsTable)):
+            print(self.centerColorsTable[color][0]," ",self.centerColorsTable[color][1]," ",self.centerColorsTable[color][2]," ",self.centerColorsTable[color][3]," ",self.centerColorsTable[color][4])
 
     def Sort(self,sub_li): 
         sub_li.sort(key = lambda x: x[1], reverse = True) 

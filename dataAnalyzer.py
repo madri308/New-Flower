@@ -5,6 +5,8 @@ import numpy as np
 import math
 
 class DataAnalyzer:
+    pixelsCenter = []
+    pixelsPetal = []
     def __init__(self,image,dots,imageID,uniqueColors):
         self.uniqueColors = uniqueColors
         self.image = image
@@ -52,31 +54,17 @@ class DataAnalyzer:
         color = self.dots[0][0]
         return color
     #PIXELES
-    def getPixelsImageCleaned(self):
-        resultPixels = []
-        
+    def getPixelsImageCleaned(self):        
         centerPrincipalColor = self.getCenterPrincipalColor()
-        #centerPrincipalColor_rgb = sRGBColor(centerPrincipalColor[0], centerPrincipalColor[1], centerPrincipalColor[2],True)
-        #centerPrincipalColor_lab = convert_color(centerPrincipalColor_rgb, LabColor)
-
         petalPrincipalColor = self.getPetalPrincipalColor()
-        #petalPrincipalColor_rgb = sRGBColor(petalPrincipalColor[0], petalPrincipalColor[1], petalPrincipalColor[2],True)
-        #petalPrincipalColor_lab = convert_color(petalPrincipalColor_rgb, LabColor) 
 
         altura =len(self.allPixels)
         ancho = len(self.allPixels[0])
         tipoPixel = ""
-        print(altura*ancho)
       
         for pixely in range(altura):
             for pixelx in range(ancho):
-
                 pixelColor = self.allPixels[pixely][pixelx]
-                #pixelColor_rgb = sRGBColor(pixelColor[0], pixelColor[1], pixelColor[2],True)
-                #pixelColor_lab = convert_color(pixelColor_rgb, LabColor) 
-              
-                #diffBetCenC_PxlC = delta_e_cie2000(centerPrincipalColor_lab, pixelColor_lab)
-                #diffBetPetC_PxlC = delta_e_cie2000(petalPrincipalColor_lab, pixelColor_lab)
                 diffBetCenC_PxlC = self.getColorDistance(pixelColor,centerPrincipalColor)
                 diffBetPetC_PxlC = self.getColorDistance(pixelColor,petalPrincipalColor)
                 
@@ -85,14 +73,17 @@ class DataAnalyzer:
                 d = math.sqrt(((pixelx-center[1])**2)+((pixely-center[2])**2))
                 if diffBetCenC_PxlC < altura*ancho/self.uniqueColors and d < self.getCenterRadio() :#COMO NO ALAMBRAR ESTO?? totalpixels/cantidad de colores
                     tipoPixel = "C"
+                    pixel = Pixel(x = pixelx, y = pixely, color = self.allPixels[pixely][pixelx], type = tipoPixel)
+                    self.pixelsCenter.append(pixel)
                 elif diffBetPetC_PxlC < altura*ancho/self.uniqueColors and d < self.getTotalFlowerRadio():
                     tipoPixel = "P"
-                else:
-                    continue
-                #Crear un pixel y meterlo en resultPixels
-                pixel = Pixel(x = pixelx, y = pixely, color = self.allPixels[pixely][pixelx], type = tipoPixel)
-                resultPixels.append(pixel)
-        return resultPixels
+                    pixel = Pixel(x = pixelx, y = pixely, color = self.allPixels[pixely][pixelx], type = tipoPixel)
+                    self.pixelsPetal.append(pixel)
+        return self.pixelsPetal+self.pixelsCenter
+    def getPetalPixels(self):
+        return self.pixelsPetal
+    def getCenterPixels(self):
+        return self.pixelsCenter
     def getColorDistance(self,RGB1,RGB2):
         rmean = ((RGB1[0]) + (RGB2[0])-2)
         r = ((RGB1[0] - (RGB2[0])))

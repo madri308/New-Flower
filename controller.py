@@ -14,7 +14,6 @@ from PIL import Image, ImageDraw
 from PIL import ImagePath  
 import random
 class Controller:
-    
     tkinterStuf = tkinterStuff()
     def __init__(self, flowers):
         self.state = 1
@@ -41,18 +40,24 @@ class Controller:
         #self.GP.avanzarGenContinua()
         
         #Tkinter stuff
-        self.genCount = 0
         self.root = tkinter.Tk()
         self.root.resizable(False,False)
-        self.img = np.zeros( (800,800,3),np.uint8) 
+        frame = tkinter.Frame(self.root)
+        frame.pack(side = "top")
+        
+        self.img = np.zeros( (550,550,3),np.uint8) 
         imgtk = ImageTk.PhotoImage(image=Image.fromarray(self.img))
+
         self.imagePanel = tkinter.Label(self.root, image = imgtk)
-        self.imagePanel.pack(side = "bottom", fill = "both", expand = "yes")
-        start_button=Button(self.root,text="Dibujar",command=self.start)
+        self.imagePanel.pack(side = "left", fill = "both", expand = "yes")
+        self.OGimagePanel = tkinter.Label(self.root, image = imgtk)
+        self.OGimagePanel.pack(side = "left", fill = "both", expand = "yes")
+
+        start_button=Button(frame,text="Dibujar",command=self.start)
         start_button.pack(side = "left")
-        stop_button=Button(self.root,text="Pausar",command=self.stop)
+        stop_button=Button(frame,text="Pausar",command=self.stop)
         stop_button.pack(side = "left")
-        restart_button=Button(self.root,text="Seguir",command=self.restart)
+        restart_button=Button(frame,text="Seguir",command=self.restart)
         restart_button.pack(side = "left")
         self.root.mainloop() 
     #INTERFAZ         
@@ -60,13 +65,15 @@ class Controller:
         self.state = 0
     def start(self):
         if self.state == 1:
-            self.root.title("Generacion "+str(self.genCount))
-            self.genCount = self.GP.genCounter
+            self.root.title("Generacion "+str(self.GP.genCounter))
             pixelList = [self.GP.getPoblacionPetalo(),self.GP.getPoblacionCentro()]
             self.drawFlower(pixelList)
-            print("----------------------------------------------------------------")
             self.GP.avanzarGeneracion()
             #self.GP.avanzarGenContinua()
+            if self.GP.genCounter == 1:
+                imgtk = ImageTk.PhotoImage(image=Image.fromarray(self.img))
+                self.OGimagePanel.configure(image = imgtk)
+                self.OGimagePanel.image = imgtk
             self.imagePanel.after(1000,self.start)
     def restart(self):
         self.state = 1
@@ -110,6 +117,7 @@ class Controller:
             center.append([x,y])
         return center
     def drawFlower(self,pixelList):
+        self.img = np.zeros( (550,550,3),np.uint8) 
         petalPixels = pixelList[0]
         centerPixels = pixelList[1]
         #PINTA PETALOS

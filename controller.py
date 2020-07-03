@@ -17,6 +17,7 @@ class Controller:
     GP = GeneticProcessor()
     tkinterStuf = tkinterStuff()
     def __init__(self, flowers):
+        self.state = 1
         self.flowers = flowers
         #Combinacion de pixeles
         self.allPixels = self.mergePixels()
@@ -36,18 +37,31 @@ class Controller:
         #self.GP.showTable()
         #self.GP.avanzarGenContinua()
         #Tkinter stuff
+        self.genCount = 0
         self.root = tkinter.Tk()
         self.img = np.zeros( (800,800,3),np.uint8) 
         imgtk = ImageTk.PhotoImage(image=Image.fromarray(self.img))
-        self.panel = tkinter.Label(self.root, image = imgtk)
-        self.panel.pack(side = "bottom", fill = "both", expand = "yes")
+        self.imagePanel = tkinter.Label(self.root, image = imgtk)
+        self.imagePanel.pack(side = "bottom", fill = "both", expand = "yes")
         start_button=Button(self.root,text="Dibujar",command=self.start)
-        start_button.pack()
+        start_button.pack(side = "left")
+        stop_button=Button(self.root,text="Pausar",command=self.stop)
+        stop_button.pack(side = "left")
+        restart_button=Button(self.root,text="Seguir",command=self.restart)
+        restart_button.pack(side = "left")
         self.root.mainloop() 
     #INTERFAZ         
+    def stop(self):
+        self.state = 0
     def start(self):
-        self.drawFlower()
-        self.panel.after(10,self.start)
+        if self.state == 1:
+            self.root.title("Generacion "+str(self.genCount))
+            self.genCount += 1
+            self.drawFlower()
+            self.imagePanel.after(10,self.start)
+    def restart(self):
+        self.state = 1
+        self.start()
     #PARA FORMAR LA FLOR
     def getLimits(self):
         originalLimits = [[-1,-1],[-1,-1],[-1,-1],[-1,-1]] #arriba,abajo,izq,der
@@ -81,8 +95,8 @@ class Controller:
             y = random.randint(int(self.centroProm[1]-promRadio),int(self.centroProm[1]+promRadio))
             d = math.sqrt(((x-self.centroProm[0])**2)+((y-self.centroProm[1])**2))
             while d > promRadio:    
-                x = random.randint(self.originalLimits[2][0],self.originalLimits[3][0])
-                y = random.randint(self.originalLimits[0][1],self.originalLimits[1][1])
+                x = random.randint(int(self.centroProm[0]-promRadio),int(self.centroProm[0]+promRadio))
+                y = random.randint(int(self.centroProm[1]-promRadio),int(self.centroProm[1]+promRadio))
                 d = math.sqrt(((x-self.centroProm[0])**2)+((y-self.centroProm[1])**2))
             center.append([x,y])
         return center
@@ -99,8 +113,8 @@ class Controller:
         for dot in center:
             self.img[dot[0],dot[1]] = (self.allCenterPixels[random.randint(0,len(self.allCenterPixels)-1)].color)
         imgtk = ImageTk.PhotoImage(image=Image.fromarray(self.img))
-        self.panel.configure(image = imgtk)
-        self.panel.image = imgtk
+        self.imagePanel.configure(image = imgtk)
+        self.imagePanel.image = imgtk
     def rotateShape(self,shape,angle,origin):
         newShape = []
         ox = origin[0]

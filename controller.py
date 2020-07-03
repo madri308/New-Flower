@@ -39,6 +39,7 @@ class Controller:
         #Tkinter stuff
         self.genCount = 0
         self.root = tkinter.Tk()
+        self.root.resizable(False,False)
         self.img = np.zeros( (800,800,3),np.uint8) 
         imgtk = ImageTk.PhotoImage(image=Image.fromarray(self.img))
         self.imagePanel = tkinter.Label(self.root, image = imgtk)

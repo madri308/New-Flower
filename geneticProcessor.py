@@ -153,14 +153,20 @@ class GeneticProcessor(IConstant):
 
     ## Elimina a n individuos peor adaptados
     def eliminarIndividuos(self,poblacion,cantidad):
+        eliminadosCounter = 0
+        while cantidad > eliminadosCounter:
+            posicion = random.randint(0,len(poblacion)-1)
+            poblacion.pop(posicion)
+            eliminadosCounter += 1
+        return poblacion
+        
+    def eliminarIndividuosNoAptos(self,poblacion,cantidad):
         if cantidad <= len(poblacion):
             return poblacion[:len(poblacion) - cantidad]
-        
+        return poblacion
 
     def reproducirPoblacion(self,poblacion):
         cantidadParejas = ((len(poblacion) * self.individuosTomados) // 100) // 2
-        poblacion = self.eliminarIndividuos(poblacion, cantidadParejas)
-
         for i in range (cantidadParejas):
             individuo1 = poblacion[i][0]
             individuo2 = poblacion[i+1][0]
@@ -168,6 +174,7 @@ class GeneticProcessor(IConstant):
             cromosoma = self.cruzador.mutate(cromosoma)
             poblacion.append([Individuo(cromosoma),0])
         
+        poblacion = self.eliminarIndividuos(poblacion, cantidadParejas)
         return poblacion
 
     ## Avanza a la siguiente generación
@@ -182,9 +189,10 @@ class GeneticProcessor(IConstant):
         ## 3. Cruces y mutacion
         ##Las veces que va a agarrar una pareja
         ##
+    
         self.poblacionCentro = self.reproducirPoblacion(self.poblacionCentro)
         self.poblacionPetalo = self.reproducirPoblacion(self.poblacionPetalo)
-        #self.showPoblacion()            
+        #self.showPoblacion()
         self.genCounter += 1
 
     ## Va a reproducir a la población tantas veces como generaciones se desean

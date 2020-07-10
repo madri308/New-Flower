@@ -10,6 +10,7 @@ class MainApplication(tkinter.Frame):
         root.geometry("500x200")
         root.configure(bg='white')
         root.wm_title("New Flower")
+        root.resizable(False,False)
 
         entry3 = tkinter.Entry(root,justify=tkinter.CENTER,width = 70)
         entry3.pack(side = tkinter.BOTTOM)

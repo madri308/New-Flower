@@ -29,7 +29,7 @@ class Controller:
         self.centroProm = self.getPromCenter() 
         self.originalLimits = self.getLimits()
         #areas promedio
-        self.centerArea = (self.getPromRadio()*2)**2
+        self.centerArea = ((self.getPromRadio()*2)**2)
         self.petalArea = int((self.originalLimits[1][1]-self.originalLimits[0][1])*(self.originalLimits[3][0]-self.originalLimits[2][0]))
         
         #Genetico
@@ -45,7 +45,7 @@ class Controller:
         frame = tkinter.Frame(self.root)
         frame.pack(side = "top")
         
-        self.img = np.zeros( (550,550,3),np.uint8) 
+        self.img = np.zeros( (600,600,3),np.uint8) 
         imgtk = ImageTk.PhotoImage(image=Image.fromarray(self.img))
 
         self.imagePanel = tkinter.Label(self.root, image = imgtk)

@@ -2,6 +2,7 @@ from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000
 import numpy as np
+#np.seterr(over='ignore')
 import math
 
 class DataAnalyzer:
@@ -70,12 +71,12 @@ class DataAnalyzer:
                 
                 tipoPixel = ""
                 center = self.getTotalCenter()
-                d = math.sqrt(((pixelx-center[1])**2)+((pixely-center[2])**2))
-                if diffBetCenC_PxlC < altura*ancho/self.uniqueColors and d < self.getCenterRadio() :#COMO NO ALAMBRAR ESTO?? totalpixels/cantidad de colores
+                dBetC_P = math.sqrt(((pixelx-center[1])**2)+((pixely-center[2])**2))
+                if diffBetCenC_PxlC < altura*ancho/self.uniqueColors and dBetC_P < self.getCenterRadio() :#COMO NO ALAMBRAR ESTO?? totalpixels/cantidad de colores
                     tipoPixel = "C"
                     pixel = Pixel(x = pixelx, y = pixely, color = self.allPixels[pixely][pixelx], type = tipoPixel)
                     self.pixelsCenter.append(pixel)
-                elif diffBetPetC_PxlC < altura*ancho/self.uniqueColors and d < self.getTotalFlowerRadio():
+                elif diffBetPetC_PxlC < altura*ancho/self.uniqueColors and dBetC_P < self.getTotalFlowerRadio():
                     tipoPixel = "P"
                     pixel = Pixel(x = pixelx, y = pixely, color = self.allPixels[pixely][pixelx], type = tipoPixel)
                     self.pixelsPetal.append(pixel)

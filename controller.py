@@ -13,10 +13,13 @@ import matplotlib as mpl
 from PIL import Image, ImageDraw
 from PIL import ImagePath  
 import random
+from resultView import *  
+ 
 class Controller:
     tkinterStuf = tkinterStuff()
     def __init__(self, flowers):
         self.state = 1
+        self.mode = 0
         self.flowers = flowers
         #Combinacion de pixeles
         self.allPixels = self.mergePixels()
@@ -31,50 +34,35 @@ class Controller:
         #areas promedio
         self.centerArea = ((self.getPromRadio()*2)**2)
         self.petalArea = int((self.originalLimits[1][1]-self.originalLimits[0][1])*(self.originalLimits[3][0]-self.originalLimits[2][0]))
-        
         #Genetico
         self.GP = GeneticProcessor()
         self.GP.createTable([self.allCenterPixels,self.allPetalPixels])
-        self.GP.startPoblacionInicial(int(self.petalArea),int(self.centerArea))
-        #self.GP.startPoblacionInicial(40,40)
-        #self.GP.avanzarGenContinua()
-        
         #Tkinter stuff
-        self.root = tkinter.Tk()
-        self.root.resizable(False,False)
-        frame = tkinter.Frame(self.root)
-        frame.pack(side = "top")
-        
-        self.img = np.zeros( (600,600,3),np.uint8) 
-        imgtk = ImageTk.PhotoImage(image=Image.fromarray(self.img))
-
-        self.imagePanel = tkinter.Label(self.root, image = imgtk)
-        self.imagePanel.pack(side = "left", fill = "both", expand = "yes")
-        self.OGimagePanel = tkinter.Label(self.root, image = imgtk)
-        self.OGimagePanel.pack(side = "left", fill = "both", expand = "yes")
-
-        start_button=Button(frame,text="Dibujar",command=self.start)
-        start_button.pack(side = "left")
-        stop_button=Button(frame,text="Pausar",command=self.stop)
-        stop_button.pack(side = "left")
-        restart_button=Button(frame,text="Seguir",command=self.restart)
-        restart_button.pack(side = "left")
-        self.root.mainloop() 
-    #INTERFAZ         
+        self.view = resultView(self)
+        self.view.show()
+    #INTERFAZ      
+    def setMode(self,mode):
+        if mode == 1:
+            self.quantPetals = self.quantPetals//2
+            #cada figura tiene entre 0 y 112 pixeles
+            self.petalArea = (self.petalArea*20//100)
+            self.mode = 1
+        self.GP.startPoblacionInicial(int(self.petalArea),int(self.centerArea))
+        self.start()
     def stop(self):
         self.state = 0
     def start(self):
         if self.state == 1:
-            self.root.title("Generacion "+str(self.GP.genCounter))
+            self.view.root.title("Generacion "+str(self.GP.genCounter))
             pixelList = [self.GP.getPoblacionPetalo(),self.GP.getPoblacionCentro()]
             self.drawFlower(pixelList)
             self.GP.avanzarGeneracion()
             #self.GP.avanzarGenContinua()
             if self.GP.genCounter == 1:
                 imgtk = ImageTk.PhotoImage(image=Image.fromarray(self.img))
-                self.OGimagePanel.configure(image = imgtk)
-                self.OGimagePanel.image = imgtk
-            self.imagePanel.after(1000,self.start)
+                self.view.OGimagePanel.configure(image = imgtk)
+                self.view.OGimagePanel.image = imgtk
+            self.view.imagePanel.after(1000,self.start)
     def restart(self):
         self.state = 1
         self.start()
@@ -126,14 +114,27 @@ class Controller:
         for petaloId in range(self.quantPetals):
             petal = self.rotateShape(originalPetal,math.radians(angle)*petaloId,self.centroProm)
             for dot in petal:
-                self.img[dot[0],dot[1]] = (self.GP.findColorOfIndividual(petalPixels[random.randint(0,len(petalPixels)-1)][0].getCromosoma(),self.GP.petalColorsTable))
+                color = (self.GP.findColorOfIndividual(petalPixels[random.randint(0,len(petalPixels)-1)][0].getCromosoma(),self.GP.petalColorsTable))
+                if self.mode == 0:
+                    self.img[dot[0],dot[1]] = color
+                else:
+                    #cv2.circle(self.img,(dot[0],dot[1]), random.randint(0,3), (int(color[0]),int(color[1]),int(color[2])),-1)
+                    contours = np.asarray([[dot[0],dot[1]-random.randint(-15,15)],[dot[0]-random.randint(-15,15),dot[1]],[dot[0],dot[1]+random.randint(-15,15)],[dot[0]+random.randint(-15,15),dot[1]]], 'int32')
+                    cv2.fillConvexPoly(self.img, contours, (int(color[0]),int(color[1]),int(color[2])),lineType=4)
         #PINTA CENTRO
         center = self.buildCenter()
         for dot in center:
-            self.img[dot[0],dot[1]] = (self.GP.findColorOfIndividual(centerPixels[random.randint(0,len(centerPixels)-1)][0].getCromosoma(),self.GP.centerColorsTable))
+            color = (self.GP.findColorOfIndividual(centerPixels[random.randint(0,len(centerPixels)-1)][0].getCromosoma(),self.GP.centerColorsTable))
+            if self.mode == 0:
+                self.img[dot[0],dot[1]] = color
+            else:
+                cv2.circle(self.img,(dot[0],dot[1]), random.randint(0,4), (int(color[0]),int(color[1]),int(color[2])),-1)
+            #contours = np.asarray([[dot[0],dot[1]-4],[dot[0]-4,dot[1]],[dot[0],dot[1]+4],[dot[0]+4,dot[1]]], 'int32')
+            #cv2.fillConvexPoly(self.img, contours, (int(color[0]),int(color[1]),int(color[2])),lineType=4)
+            #cv2.drawContours(self.img,[contours],0,(255,255,255),1)
         imgtk = ImageTk.PhotoImage(image=Image.fromarray(self.img))
-        self.imagePanel.configure(image = imgtk)
-        self.imagePanel.image = imgtk
+        self.view.imagePanel.configure(image = imgtk)
+        self.view.imagePanel.image = imgtk
     def rotateShape(self,shape,angle,origin):
         newShape = []
         ox = origin[0]

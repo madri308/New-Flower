@@ -41,7 +41,7 @@ class GeneticProcessor(IConstant):
         for colorRange in range(len(tabla)):
             if (colorId >= tabla[colorRange][3] and colorId <= tabla[colorRange][4]):
                 return tabla[colorRange][0]
-        return tabla[0][0] # CABALLADA --- PARA EVITAR -- CAMBIAR AL ULTIMO DIA DE REVISION
+        return tabla[0][0] # CABALLADA --- PARA EVITAR -- PROBLEMA RESUELTO, NO HABIAN COLORES EN TABLA
         
 
     ## Saca la luminosidad con la fórmula

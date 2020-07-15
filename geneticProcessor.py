@@ -29,9 +29,9 @@ class GeneticProcessor(IConstant):
     ## 1. Poblacion inicial
     def startPoblacionInicial(self,cantidadIndividuosPetalo,cantidadIndividuosCentro):
         for individuo in range(cantidadIndividuosPetalo):
-            self.poblacionPetalo.append([Individuo(random.randint(0,self.bits-1)),0]) # de la interfaz
+            self.poblacionPetalo.append([Individuo(random.randint(0,self.BITS-1)),0]) # de la interfaz
         for individuo in range(cantidadIndividuosCentro):
-            self.poblacionCentro.append([Individuo(random.randint(0,self.bits-1)),0])
+            self.poblacionCentro.append([Individuo(random.randint(0,self.BITS-1)),0])
 
         print("Numero de poblacion Centro: " + str(len(self.poblacionCentro)))
         print("Numero de poblacion Pétalo: " + str(len(self.poblacionPetalo)))
@@ -41,7 +41,9 @@ class GeneticProcessor(IConstant):
         for colorRange in range(len(tabla)):
             if (colorId >= tabla[colorRange][3] and colorId <= tabla[colorRange][4]):
                 return tabla[colorRange][0]
-        return tabla[0][0] # CABALLADA --- PARA EVITAR -- PROBLEMA RESUELTO, NO HABIAN COLORES EN TABLA
+        
+        ## Pasa pocas veces, devuelve el ultimo color de la lista grande
+        return tabla[len(tabla)-1][0] #-- PROBLEMA RESUELTO, PUEDE HABER COLORES QUE LLEGUEN A ESPECTROS MAYORES AL RANGO
         
 
     ## Saca la luminosidad con la fórmula
@@ -55,7 +57,9 @@ class GeneticProcessor(IConstant):
             return 255
         return optimo
 
+    ## 
     def getColorOptimo(self,colorRGB):
+        ## Se asignan del R,G y B el mayor, menor y medio con los valores 1, -1 y 0 respectivamente
         orden = [0,0,0]
         optimo = []
         if (colorRGB[0] >= colorRGB[1] and colorRGB[0] >= colorRGB[2]):
@@ -79,14 +83,15 @@ class GeneticProcessor(IConstant):
         else:
             pass
 
+        ## Se asignan los valores con los que se mueven los colores optimos [50,25,5]
         for rangeValue in range(len(orden)):
             multiplo = 0
             if (orden[rangeValue] == 1):
-                multiplo = self.rango[0]
+                multiplo = self.RANGO[0]
             elif(orden[rangeValue] == 0):
-                multiplo = self.rango[1]
+                multiplo = self.RANGO[1]
             else:
-                multiplo = self.rango[2]
+                multiplo = self.RANGO[2]
             optimoColor = self.getMin_Max(colorRGB[rangeValue],multiplo)
             optimo.append(optimoColor)
         return optimo
@@ -95,13 +100,14 @@ class GeneticProcessor(IConstant):
     def fitness(self,poblacion,tabla):
         index = 0
         for indivNumero in range (len(poblacion)):
+            ## Encuentra el color del individuo
             colorIndividuo = self.findColorOfIndividual(poblacion[indivNumero][0].getCromosoma(),tabla)
-            #print(colorIndividuo)
-            #print(poblacion[indivNumero][0].getCromosoma())
-            #print(self.getColorOptimo(colorIndividuo))
+            
+            # calificacion = luminosidad(color actual) / luminosidad(color optimo)
             calificacion = self.getLuminosidad(colorIndividuo) / self.getLuminosidad(self.getColorOptimo(colorIndividuo))
             poblacion[indivNumero][1] = calificacion
         return poblacion
+
 
     def createTable(self,pixels):
         allColors = []
@@ -132,6 +138,7 @@ class GeneticProcessor(IConstant):
         self.centerColorsTable = allColors[0]
         self.petalColorsTable = allColors[1]
         self.showTable()
+        
     def showTable(self):
         print("PETALOS:")
         for color in range(len(self.petalColorsTable)):
@@ -140,6 +147,7 @@ class GeneticProcessor(IConstant):
         for color in range(len(self.centerColorsTable)):
             print(self.centerColorsTable[color][0]," ",self.centerColorsTable[color][1]," ",self.centerColorsTable[color][2]," ",self.centerColorsTable[color][3]," ",self.centerColorsTable[color][4])
 
+    ## Hace sorting descendente de la poblacion de acuerdo a la calificacion. [individuo,calificacion]
     def Sort(self,sub_li): 
         sub_li.sort(key = lambda x: x[1], reverse = True) 
         return sub_li 
@@ -151,7 +159,7 @@ class GeneticProcessor(IConstant):
             print ("Individuo = " + str(individuo.getCromosoma()) + " " + str(self.findColorOfIndividual(individuo.getCromosoma(),tabla)))
         print()
 
-    ## Elimina a n individuos peor adaptados
+    ## Elimina a individuos de la poblacion aleatoriamente
     def eliminarIndividuos(self,poblacion,cantidad):
         eliminadosCounter = 0
         while cantidad > eliminadosCounter:
@@ -160,20 +168,23 @@ class GeneticProcessor(IConstant):
             eliminadosCounter += 1
         return poblacion
         
+    ## Elimina a n individuos peor adaptados(No se usa actualmente porque elimina a los no aptos en muy pocas generaciones)
     def eliminarIndividuosNoAptos(self,poblacion,cantidad):
         if cantidad <= len(poblacion):
             return poblacion[:len(poblacion) - cantidad]
         return poblacion
 
+    ## cantidadParejas-> saca cuantas parejas hacer y consecuentemente cuantos hijos habran
     def reproducirPoblacion(self,poblacion):
-        cantidadParejas = ((len(poblacion) * self.individuosTomados) // 100) // 2
-        for i in range (cantidadParejas):
-            individuo1 = poblacion[i][0]
-            individuo2 = poblacion[i+1][0]
+        cantidadParejas = ((len(poblacion) * self.INDIVIDUOS_TOMADOS) // 100) // 2
+        for padre in range (cantidadParejas):
+            individuo1 = poblacion[padre][0]
+            individuo2 = poblacion[padre+1][0]
             cromosoma = self.cruzador.cross(individuo1.getCromosoma(),individuo2.getCromosoma())
             cromosoma = self.cruzador.mutate(cromosoma)
             poblacion.append([Individuo(cromosoma),0])
         
+        ## Se eliminan a la poblacion despues de la reproduccion
         poblacion = self.eliminarIndividuos(poblacion, cantidadParejas)
         return poblacion
 
@@ -199,7 +210,9 @@ class GeneticProcessor(IConstant):
     def avanzarGenContinua(self):
         #self.showPoblacion(self.poblacionCentro,self.centerColorsTable)
         #self.showPoblacion(self.poblacionPetalo,self.petalColorsTable) 
-        for numGen in range (self.generacionMax):
+        
+        ## opcion para generar n generaciones 
+        for numGen in range (self.GENERACION_MAX):
             self.avanzarGeneracion()
 
         #self.showPoblacion(self.poblacionCentro,self.centerColorsTable)

@@ -28,13 +28,13 @@ class FlowerView:
             left_frame.pack(sid="left")
             left_frame.configure(bg='white')
 
-            infoDots = Label(root, text="Puntos: minimo 10 \n en el siguiente orden:\n- 1 Color petalos."+
-                                                            "\n-1: 1 Color centro."+
-                                                            "\n-2: 1 Centro de la flor."+
-                                                            "\n-3: 1 Contorno del centro."+
-                                                            "\n-4: 1 Extremo de un petalo."+
-                                                            "\n-5: 5 o más Contorno de un petalo. (direccion reloj)"+
-                                                            "\n Y por favor abajo ingrese la cantidad de colores de la imagen.",justify=tkinter.CENTER)
+            infoDots = Label(root, text="Puntos: minimo 10 en el siguiente orden:\n1. Un color petalos."+
+                                                            "\n2. Un color centro."+
+                                                            "\n3. Un centro de la flor."+
+                                                            "\n4. Un contorno del centro."+
+                                                            "\n5. Un extremo de un petalo."+
+                                                            "\n6. Cinco o más del contorno de un petalo. (direccion reloj)"+
+                                                            "\n Y por favor abajo ingrese la cantidad de colores de la imagen.",justify=tkinter.LEFT)
             infoDots.pack(sid="top")
 
             f = Figure()

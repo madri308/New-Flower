@@ -41,9 +41,9 @@ class GeneticProcessor(IConstant):
         for colorRange in range(len(tabla)):
             if (colorId >= tabla[colorRange][3] and colorId <= tabla[colorRange][4]):
                 return tabla[colorRange][0]
-        
         ## Pasa pocas veces, devuelve el ultimo color de la lista grande
         return tabla[len(tabla)-1][0] #-- PROBLEMA RESUELTO, PUEDE HABER COLORES QUE LLEGUEN A ESPECTROS MAYORES AL RANGO
+
         
 
     ## Saca la luminosidad con la fórmula
@@ -130,9 +130,9 @@ class GeneticProcessor(IConstant):
                     colors.append(color)
             maxAnterior = 0
             for color in range(len(colors)):
-                colors[color].append(maxAnterior)
+                colors[color].append(int(maxAnterior))
                 max1 = self.bits*colors[color][2]/100
-                colors[color].append(maxAnterior+max1-1)
+                colors[color].append(int(maxAnterior+max1-1))
                 maxAnterior = maxAnterior+max1
             allColors.append(colors)
         self.centerColorsTable = allColors[0]

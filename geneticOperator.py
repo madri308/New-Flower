@@ -34,8 +34,8 @@ class GeneticOperator(IConstant):
             bitNumber = newGen & (1 << (self.CANTIDAD_BITS-punto))
             bitNumber = bitNumber >> (self.CANTIDAD_BITS-punto)
             if bitNumber == 0:
-                return modifyBit(newGen,punto,1)
-            return modifyBit(newGen,punto,0)
+                return self.modifyBit(newGen,punto,1)
+            return self.modifyBit(newGen,punto,0)
         else:
             return newGen
     

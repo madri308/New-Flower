@@ -4,21 +4,25 @@ class Flor:
         self.uniqueColors = uniqueColors
         self.ID = imageID
         self.image = image
+        #FLOR TIENE SU ANALIZADOR QUE NOS VA A DAR DATOS EN BASE A LO QUE NOS DIO EL USUARIO 
         self.analyzer = DataAnalyzer(image=self.image,
                                      dots=dots,
                                      imageID=self.ID,
                                      uniqueColors = self.uniqueColors)   
+        #VORAZ PARA CONSEGUIR LOS PIXELES LIMPIOS POR DECIRLO ASI 
         self.pixeles = self.analyzer.getPixelsImageCleaned()  
+        #CENTRO DE LA FLOR Y SUS CARACTERISTICAS
         self.addCentro(radio = self.analyzer.getCenterRadio(),
                         area = self.analyzer.getCenterArea(),
                         color = self.analyzer.getCenterPrincipalColor(),
                         pixeles = self.analyzer.getCenterPixels())
+        #PETALO DE LA FLOR Y SUS CARACTERISTICAS
         self.addPetalo(area = self.analyzer.getCenterArea(),
                         contorno = self.analyzer.getPetalShapeDots(),
                         color = self.analyzer.getPetalPrincipalColor(),
                         pixeles = self.analyzer.getPetalPixels())
-        self.cantPetalos = self.analyzer.getQuantityOfPetals()
-        self.centroPuntos = self.analyzer.getTotalCenter()
+        self.cantPetalos = self.analyzer.getQuantityOfPetals()#Cantidad de petalos
+        self.centroPuntos = self.analyzer.getTotalCenter()#Punto central de la flor
         
     def addCentro(self,radio,area,color,pixeles):
         self.centro = Centro(area,radio,color,pixeles)

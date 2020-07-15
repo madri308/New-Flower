@@ -6,8 +6,8 @@ import numpy as np
 import math
 
 class DataAnalyzer:
-    pixelsCenter = []
-    pixelsPetal = []
+    pixelsCenter = []#Pixeles del centro que se obtienen del voraz
+    pixelsPetal = []#Pixeles del petalo que se obtienen del voraz
     def __init__(self,image,dots,imageID,uniqueColors):
         self.uniqueColors = uniqueColors
         self.image = image
@@ -17,17 +17,19 @@ class DataAnalyzer:
     #CONTORNOS
     def getPetalShapeDots(self):
         totalDots = []
-        for dot in range (5,len(self.dots)):
+        for dot in range (5,len(self.dots)):#Empieza desde la pos 5 en adelante porque ahi estan los puntos del contorno
             totalDots.append(self.dots[dot])
         return totalDots
     #AREAS.
     def getPetalArea(self):
         area = 0.0
-        n = len(self.dots)-5
-        j = n - 1
-        for i in range(0,n): 
-            area += (self.dots[j+5][1] + self.dots[i+5][1]) * (self.dots[j+5][2] - self.dots[i+5][2]) 
-            j = i  
+        cantPuntos = len(self.dots)-5#todos los puntos menos 5 que corresponden a otra informacion
+        puntoRelac = cantPuntos - 1#Ultimo punto en este caso
+        for punto in range(0,cantPuntos): 
+            #Es el punto +5 porque ahi empiezan los puntos de contorno
+            #           X puntoRelacionado           X puntoActual           Y puntoRelacionado            Y puntoActual
+            area += (self.dots[puntoRelac+5][1] + self.dots[punto+5][1]) * (self.dots[puntoRelac+5][2] - self.dots[punto+5][2]) 
+            puntoRelac = punto #punto relacionado sera el actual y el actual se debe actualizar a el que sigue
         petalArea = (int(abs(area / 2.0))) 
         return petalArea
     def getCenterArea(self):
@@ -49,38 +51,45 @@ class DataAnalyzer:
         return radio
     #COLORES
     def getCenterPrincipalColor(self):
-        color = self.dots[1][0]
+        color = self.dots[1][0]#es donde esta el color principal del centro escogido por el user en la lista
         return color
     def getPetalPrincipalColor(self):
-        color = self.dots[0][0]
+        color = self.dots[0][0]#es donde esta el color principal del petalo escogido por el user en la lista
         return color
     #PIXELES
     def getPixelsImageCleaned(self):        
+        #Guarda los colors optimos, los que mi voraz va usar como referencia
         centerPrincipalColor = self.getCenterPrincipalColor()
         petalPrincipalColor = self.getPetalPrincipalColor()
 
         altura =len(self.allPixels)
         ancho = len(self.allPixels[0])
         tipoPixel = ""
-      
+        #RECORRO FILAS Y COLUMNAS PARA IR EVALUANDO PIXELES
         for pixely in range(altura):
             for pixelx in range(ancho):
-                pixelColor = self.allPixels[pixely][pixelx]
-                diffBetCenC_PxlC = self.getColorDistance(pixelColor,centerPrincipalColor)
-                diffBetPetC_PxlC = self.getColorDistance(pixelColor,petalPrincipalColor)
+                pixelColor = self.allPixels[pixely][pixelx]#Color del pixel actual
+                diffBetCenC_PxlC = self.getColorDistance(pixelColor,centerPrincipalColor)#Diferencia entre color actual y color optimo del centro
+                diffBetPetC_PxlC = self.getColorDistance(pixelColor,petalPrincipalColor)#Diferencia entre color actual y color optimo del petalo
                 
                 tipoPixel = ""
                 center = self.getTotalCenter()
-                dBetC_P = math.sqrt(((pixelx-center[1])**2)+((pixely-center[2])**2))
+                dBetC_P = math.sqrt(((pixelx-center[1])**2)+((pixely-center[2])**2))#Distancia entre el centro y el pixel actual
+                #Si la dif entre colorCentroOptimo y colorPixel es menor a la cant de pixeles de la imagen entre la cant de colores total de la imagen
+                #y la distancia entre el pixel y el centro es menor al radio del centro (es decir esta dentro del centro)
                 if diffBetCenC_PxlC < altura*ancho/self.uniqueColors and dBetC_P < self.getCenterRadio() :#COMO NO ALAMBRAR ESTO?? totalpixels/cantidad de colores
+                    #Entonces crea un pixel y lo guarda en la lista de los pixeles del centro limpios
                     tipoPixel = "C"
                     pixel = Pixel(x = pixelx, y = pixely, color = self.allPixels[pixely][pixelx], type = tipoPixel)
                     self.pixelsCenter.append(pixel)
+                #Si la dif entre colorPetaloOptimo y colorPixel es menor a la cant de pixeles de la imagen entre la cant de colores total de la imagen
+                #y la distancia entre el pixel y el centro es menor al radio total de la flor (es decir esta dentro de la flor)
                 elif diffBetPetC_PxlC < altura*ancho/self.uniqueColors and dBetC_P < self.getTotalFlowerRadio():
+                    #Entonces crea un pixel y lo guarda en la lista de los pixeles del petalo limpios
                     tipoPixel = "P"
                     pixel = Pixel(x = pixelx, y = pixely, color = self.allPixels[pixely][pixelx], type = tipoPixel)
                     self.pixelsPetal.append(pixel)
-        return self.pixelsPetal+self.pixelsCenter
+        return self.pixelsPetal+self.pixelsCenter#Retorna todos los pixeles en total
     def getPetalPixels(self):
         return self.pixelsPetal
     def getCenterPixels(self):
@@ -94,6 +103,7 @@ class DataAnalyzer:
         return difference
     #CANTIDADES
     def getQuantityOfPetals(self):
+        #Agarramos el total del area correspondiente a petalos(areaTotal-areaCentro) y la dividimos entre el areaPetalo
         return int((self.getTotalArea()-self.getCenterArea())/self.getPetalArea())
 class Pixel:
     def __init__(self,x,y,color,type):

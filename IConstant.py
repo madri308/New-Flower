@@ -1,9 +1,11 @@
 import abc
 
 class IConstant(abc.ABC):
-    bits = 2**16
-    cantidadIndividuos = 30
-    cantidadBits = 16
-    generacionMax = 5
-    individuosTomados  = 30
-    rango = [50,25,5]
+    BITS = 2**16
+    CANTIDAD_INDIVIDUOS = 30
+    CANTIDAD_BITS = 16
+    GENERACION_MAX = 5
+    INDIVIDUOS_TOMADOS  = 30
+    RANGO = [50,25,5]
+    LIMITE_RANGO_BITS = 5
+    MUTATION_PROB = 0.075

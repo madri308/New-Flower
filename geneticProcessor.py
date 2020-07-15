@@ -110,31 +110,35 @@ class GeneticProcessor(IConstant):
 
 
     def createTable(self,pixels):
-        allColors = []
+        allColors = []#Aqui se almacenan dos tablas: [[coloresCentro],[coloresPetalo]]
         for typePixel in pixels:
             colors = []
             total = len(typePixel)
             for pixel in range(len(typePixel)):
-                pixelColor = typePixel[pixel].color
-                encontrado = False
-                for color in range(len(colors)):
+                pixelColor = typePixel[pixel].color#guarda el color del pixel
+                encontrado = False#Bandera para saber si ya esta en la tabla o no
+                for color in range(len(colors)):#Recorre la tabla de colores
+                    #Si ya existe un color igual
                     if (pixelColor[0]+pixelColor[1]+pixelColor[2]) - (colors[color][0][0]+colors[color][0][1]+colors[color][0][2]) == 0:
-                        colors[color][1] += 1
+                        colors[color][1] += 1#incrementa la cantidad
                         apariciones = colors[color][1]
-                        porcentaje = apariciones*100/total
-                        colors[color][2] = porcentaje
-                        encontrado = True
+                        porcentaje = apariciones*100/total#Saca el porcentaje con las apariciones actuales
+                        colors[color][2] = porcentaje#Guarda el porcentaje
+                        encontrado = True#Establece que lo encontro
+                #Si no se encontro el color
                 if encontrado == False:
                             #color,aparicion,porcentaje
-                    color = [pixelColor,1,100/total]
-                    colors.append(color)
-            maxAnterior = 0
-            for color in range(len(colors)):
-                colors[color].append(int(maxAnterior))
-                max1 = self.bits*colors[color][2]/100
-                colors[color].append(int(maxAnterior+max1-1))
-                maxAnterior = maxAnterior+max1
-            allColors.append(colors)
+                    color = [pixelColor,1,100/total] #Guarda el color
+                    colors.append(color)#Lo mete en la tabla
+            #Establece los rangos para la asignacion de colores a los individuos
+            maxAnterior = 0#establece el maximo anterior igual a 0
+            for color in range(len(colors)):#Recorre la tabla
+                #Guarda los rangos
+                colors[color].append(int(maxAnterior))#Min
+                max1 = self.BITS*colors[color][2]/100#calcula la probabilidad
+                colors[color].append(int(maxAnterior+max1-1))#Se la suma al maxAnterior = maxActual
+                maxAnterior = maxAnterior+max1#Guarda el maximo anterior como el mas el actual
+            allColors.append(colors)#Guarda la tabla en la lista de tablas 
         self.centerColorsTable = allColors[0]
         self.petalColorsTable = allColors[1]
         self.showTable()

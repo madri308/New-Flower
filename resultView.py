@@ -21,13 +21,13 @@ class resultView:
         self.start_button.pack(side = "left")
         self.start_button2=Button(frame,text="Dibujar 2",command=lambda:self.setMode(1))
         self.start_button2.pack(side = "left")
-        stop_button=Button(frame,text="Pausar",command=self.stop)
-        stop_button.pack(side = "left")
-        restart_button=Button(frame,text="Seguir",command=self.restart)
-        restart_button.pack(side = "left")
+        self.stop_button=Button(frame,text="Pausar",command=self.stop)
+        self.restart_button=Button(frame,text="Seguir",command=self.restart)
     def setMode(self,mode):
         self.start_button.pack_forget()
         self.start_button2.pack_forget()
+        self.stop_button.pack(side = "left")
+        self.restart_button.pack(side = "left")
         self.controller.setMode(mode)
     def stop(self):
         self.controller.stop()

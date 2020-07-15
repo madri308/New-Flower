@@ -9,3 +9,5 @@ class IConstant(abc.ABC):
     RANGO = [50,25,5]
     LIMITE_RANGO_BITS = 5
     MUTATION_PROB = 0.075
+    RANGO_RADIO_PINTAR = 4
+    RANGO_DIMENSION_PINTAR = 15

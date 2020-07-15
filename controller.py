@@ -14,8 +14,9 @@ from PIL import Image, ImageDraw
 from PIL import ImagePath  
 import random
 from resultView import *  
- 
-class Controller:
+from IConstant import IConstant
+
+class Controller(IConstant):
     tkinterStuf = tkinterStuff()
     def __init__(self, flowers):
         self.state = 1
@@ -51,7 +52,7 @@ class Controller:
                                                     #Ya que cada pixel es representado por figura de entre 0 a 120 pixeles
             self.mode = 1
         else:
-            self.centerArea += (prom/len(self.flowers)*30/100)
+            self.centerArea += (self.centerArea*30/100)
         #Genera la poblacion inicial
         self.GP.startPoblacionInicial(int(self.petalArea),int(self.centerArea))
         self.start()
@@ -146,7 +147,7 @@ class Controller:
                     self.img[dot[0],dot[1]] = color#Pinta el pixel
                 else:
                     #Crea una figura en base al punto 
-                    rango = 15
+                    rango = self.RANGO_DIMENSION_PINTAR
                     contours = np.asarray([[dot[0],dot[1]-random.randint(-rango,rango)],[dot[0]-random.randint(-rango,rango),dot[1]],[dot[0],dot[1]+random.randint(-rango,rango)],[dot[0]+random.randint(-rango,rango),dot[1]]], 'int32')
                     cv2.fillConvexPoly(self.img, contours, (int(color[0]),int(color[1]),int(color[2])),lineType=4)
         #PINTA CENTRO
@@ -159,7 +160,7 @@ class Controller:
                 self.img[dot[0],dot[1]] = color#Pinta el pixel del color
             else:
                 #Crea un circulo en base al punto
-                rango = 4
+                rango = self.RANGO_RADIO_PINTAR
                 cv2.circle(self.img,(dot[0],dot[1]), random.randint(0,rango), (int(color[0]),int(color[1]),int(color[2])),-1)
         #Actualiza la imagen
         imgtk = ImageTk.PhotoImage(image=Image.fromarray(self.img))

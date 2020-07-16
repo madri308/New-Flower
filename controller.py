@@ -49,7 +49,7 @@ class Controller(IConstant):
             #A punta de pruebas notamos que 
             self.quantPetals = self.quantPetals//2#La mitad de los petalos representaban mas la cantidad real 
             self.petalArea = (self.petalArea*20//100)#El 20% de pixeles que conforman los petalos son suficientes
-                                                    #Ya que cada pixel es representado por figura de entre 0 a 120 pixeles
+                                                    #Ya que cada pixel es representado por figura de entre 0 a 112 pixeles
             self.mode = 1
         else:
             self.centerArea += (self.centerArea*30/100)
